@@ -62,6 +62,42 @@
 
   </div>
 
+  <!-- ========= 同步面板 ========= -->
+  <div id="syncOverlay" class="sync-overlay"></div>
+  <div id="syncPanel" class="sync-panel">
+    <h3>🔄 跨裝置雲端同步</h3>
+    <p id="syncDesc">輸入同步碼即可在多台裝置間即時同步收藏與已領取紀錄。</p>
+
+    <!-- 尚未綁定同步碼 -->
+    <div id="syncSetup">
+      <div class="sync-code-row">
+        <input type="text" id="syncCodeInput" class="sync-code-input" placeholder="輸入同步碼" maxlength="20" autocomplete="off" spellcheck="false">
+        <button id="btnJoinCode" class="btn btn-sync-join">加入</button>
+      </div>
+      <div class="sync-divider"><span>或</span></div>
+      <button id="btnNewCode" class="btn btn-sync-new">🆕 產生新的同步碼<span>第一次使用?點這裡建立</span></button>
+    </div>
+
+    <!-- 已綁定同步碼 -->
+    <div id="syncConnected" style="display:none">
+      <div class="sync-code-display">
+        <span>你的同步碼</span>
+        <div class="sync-code-value" id="syncCodeDisplay">------</div>
+        <button id="btnCopyCode" class="btn btn-sync-copy">📋 複製</button>
+      </div>
+      <div class="sync-status" id="syncStatus">🟢 已連線</div>
+      <div class="sync-panel-actions">
+        <button id="btnForceSync" class="btn btn-sync-force">🔄 立即同步</button>
+        <button id="btnDisconnect" class="btn btn-sync-disconnect">🔌 斷開</button>
+      </div>
+    </div>
+
+    <p class="sync-hint">💡 在另一台裝置輸入同樣的同步碼,資料會自動即時同步。</p>
+  </div>
+
+  <!-- ========= 同步浮動按鈕 ========= -->
+  <button id="btnSync" class="fab-sync" title="跨裝置同步" aria-label="跨裝置同步">🔄</button>
+
   <footer class="footer">
     資料僅供參考,實際優惠以各店家/單位公告為準<br>
     最後更新: 2026/04 · Made with 💗 for 台南媽咪
