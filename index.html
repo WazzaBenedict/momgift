@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5">
+  <meta name="description" content="台南媽媽禮地圖 - 媽媽手冊兌換指南,依地區與百貨分類的台南媽媽禮完整資訊">
+  <meta name="theme-color" content="#ff8fa3">
+  <title>🍼 台南媽媽禮地圖</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <header>
+    <h1>🍼 台南媽媽禮地圖</h1>
+    <p>媽媽手冊兌換完整指南</p>
+    <button id="themeToggle" class="theme-toggle" title="切換深淺色" aria-label="切換深淺色模式">🌙</button>
+  </header>
+
+  <div class="container">
+
+    <div class="tabs" role="tablist">
+      <button class="tab active" data-section="local">🏪 實體店家</button>
+      <button class="tab" data-section="mall">🏬 百貨公司</button>
+      <button class="tab" data-section="online">📦 全台品牌</button>
+      <button class="tab" data-section="hospital">🏥 醫院診所</button>
+      <button class="tab" data-section="gov">🏛️ 政府補助</button>
+    </div>
+
+    <!-- ========= 實體店家 ========= -->
+    <section id="section-local">
+      <div class="toolbar">
+        <input type="text" class="search-box" id="searchBox" placeholder="🔍 搜尋店名、地址、贈品...">
+        <select id="brandFilter" class="brand-select" aria-label="依品牌篩選"></select>
+      </div>
+      <div id="stats" class="stats"></div>
+      <div class="warning">⚠️ 前往前請先電話確認庫存與活動是否在進行中,以免白跑一趟。</div>
+      <div id="districtList"></div>
+    </section>
+
+    <!-- ========= 百貨公司 ========= -->
+    <section id="section-mall" class="section-hidden">
+      <div class="warning">🏬 台南主要百貨內設有婦幼專櫃,可一站式逛多家品牌,建議挑週年慶或媽咪節檔期會有加碼贈禮。</div>
+      <div id="mallList"></div>
+    </section>
+
+    <!-- ========= 全台品牌 ========= -->
+    <section id="section-online" class="section-hidden">
+      <div class="warning">💡 以下品牌不限台南,全台媽咪皆可線上申請,審核通過後郵寄到府 (部分需自付運費)。</div>
+      <div id="onlineList"></div>
+    </section>
+
+    <!-- ========= 醫院診所 ========= -->
+    <section id="section-hospital" class="section-hidden">
+      <div class="warning">💡 台南多數大型婦產科於產檢、待產住院或出院時會贈送媽媽包/新生兒禮,內容依醫院而異。</div>
+      <div id="hospitalList"></div>
+    </section>
+
+    <!-- ========= 政府補助 ========= -->
+    <section id="section-gov" class="section-hidden">
+      <div id="govList"></div>
+    </section>
+
+  </div>
+
+  <footer class="footer">
+    資料僅供參考,實際優惠以各店家/單位公告為準<br>
+    最後更新: 2026/04 · Made with 💗 for 台南媽咪
+  </footer>
+
+  <script src="js/data.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
