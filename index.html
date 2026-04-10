@@ -3,107 +3,834 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5">
-  <meta name="description" content="台南媽媽禮地圖 - 媽媽手冊兌換指南,依地區與百貨分類的台南媽媽禮完整資訊">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
+  <meta name="description" content="台南媽媽禮地圖 - 媽媽手冊兌換指南">
   <meta name="theme-color" content="#ff8fa3">
   <title>🍼 台南媽媽禮地圖</title>
-  <link rel="stylesheet" href="css/style.css">
+<style>
+/* ====================================================
+   全域 + CSS 變數
+   ==================================================== */
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --pink:#ff8fa3;--pink-d:#e56b85;--pink-dd:#c4506d;
+  --bg:#fff5f7;--card:#fff;--text:#3d2b35;--muted:#8a7580;
+  --accent:#ffd6e0;--border:#ffe4ec;
+  --shadow:0 2px 10px rgba(229,107,133,.08);
+  --warn-bg:#fff8e1;--warn-bd:#ffc107;--warn-tx:#7a5c00;
+  --radius:14px;
+}
+[data-theme="dark"]{
+  --bg:#1a1419;--card:#261c22;--text:#f2e4ea;--muted:#a08a94;
+  --accent:#4a2a36;--border:#3a2530;
+  --shadow:0 2px 12px rgba(0,0,0,.4);
+  --warn-bg:#3a2f14;--warn-tx:#ffd966;
+  --pink-d:#ffb3c6;
+}
+html,body{
+  font-family:-apple-system,BlinkMacSystemFont,"Noto Sans TC","PingFang TC","Microsoft JhengHei",sans-serif;
+  background:var(--bg);color:var(--text);line-height:1.6;
+  padding-bottom:80px;transition:background .3s,color .3s;
+}
+
+/* ====================================================
+   Header
+   ==================================================== */
+header{
+  background:linear-gradient(135deg,#ffb3c6,#ff8fa3);
+  color:#fff;padding:22px 20px 20px;text-align:center;
+  box-shadow:0 4px 15px rgba(229,107,133,.2);position:relative;
+}
+[data-theme="dark"] header{background:linear-gradient(135deg,#5a2a3a,#7a3a4e)}
+header h1{font-size:1.5rem;margin-bottom:3px}
+header p{font-size:.82rem;opacity:.92}
+.header-btns{position:absolute;top:16px;right:14px;display:flex;gap:6px}
+.hbtn{
+  background:rgba(255,255,255,.25);border:none;color:#fff;
+  width:36px;height:36px;border-radius:50%;font-size:1rem;
+  cursor:pointer;backdrop-filter:blur(4px);transition:transform .2s;
+}
+.hbtn:hover{transform:rotate(15deg)}
+
+/* ====================================================
+   Container / Tabs
+   ==================================================== */
+.container{max-width:900px;margin:0 auto;padding:0 14px}
+.tabs{
+  display:flex;gap:8px;margin:16px 0 12px;
+  overflow-x:auto;padding-bottom:4px;scrollbar-width:none
+}
+.tabs::-webkit-scrollbar{display:none}
+.tab{
+  flex:0 0 auto;padding:8px 15px;background:var(--card);
+  border:2px solid var(--border);border-radius:22px;
+  font-size:.88rem;font-weight:600;color:var(--muted);
+  cursor:pointer;white-space:nowrap;transition:all .2s;
+  font-family:inherit;
+}
+.tab.active{background:var(--pink);color:#fff;border-color:var(--pink)}
+.section-hidden{display:none}
+
+/* ====================================================
+   Toolbar / Search
+   ==================================================== */
+.toolbar{display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap}
+.search-box,.brand-select{
+  padding:10px 13px;border:2px solid var(--border);border-radius:12px;
+  font-size:.9rem;background:var(--card);color:var(--text);
+  outline:none;font-family:inherit;
+}
+.search-box{flex:1 1 180px}.search-box:focus{border-color:var(--pink)}
+.brand-select{min-width:120px;cursor:pointer}
+
+/* ====================================================
+   Stats bar
+   ==================================================== */
+.stats{display:flex;gap:8px;margin-bottom:12px;font-size:.8rem;color:var(--muted);flex-wrap:wrap}
+.stats span{background:var(--card);padding:5px 11px;border-radius:14px;box-shadow:var(--shadow)}
+.stats b{color:var(--pink-d)}
+
+/* ====================================================
+   Warning / Info
+   ==================================================== */
+.warning{
+  background:var(--warn-bg);border-left:4px solid var(--warn-bd);
+  padding:10px 13px;border-radius:8px;font-size:.82rem;
+  margin-bottom:13px;color:var(--warn-tx);
+}
+.info-block{
+  background:var(--card);border-radius:var(--radius);
+  padding:15px 17px;margin-bottom:11px;box-shadow:var(--shadow);
+}
+.info-block h3{color:var(--pink-d);margin-bottom:5px;font-size:1rem}
+.info-block p{font-size:.86rem;margin-bottom:4px;color:var(--text)}
+.info-block strong{color:var(--pink-d)}
+
+/* ====================================================
+   District group
+   ==================================================== */
+.district{margin-bottom:20px}
+.district-title{
+  font-size:1.05rem;font-weight:700;color:var(--pink-d);
+  padding:7px 0 9px;border-bottom:2px dashed var(--border);
+  margin-bottom:10px;display:flex;align-items:center;gap:7px;
+}
+.count{font-size:.76rem;color:var(--muted);font-weight:400}
+
+/* ====================================================
+   Card
+   ==================================================== */
+.card{
+  background:var(--card);border-radius:var(--radius);
+  padding:13px 15px;margin-bottom:9px;
+  box-shadow:var(--shadow);border-left:4px solid var(--pink);
+  position:relative;
+}
+.card.received{opacity:.65;border-left-color:#8bc34a}
+.card-head{display:flex;justify-content:space-between;align-items:flex-start;gap:6px;margin-bottom:3px}
+.card h3{font-size:.97rem;color:var(--text);flex:1;line-height:1.3}
+.brand-tag{
+  display:inline-block;background:var(--accent);color:var(--pink-d);
+  font-size:.7rem;padding:2px 7px;border-radius:10px;
+  margin-left:5px;font-weight:600;vertical-align:middle;
+}
+.mall-tag{
+  display:inline-block;background:#e8d5ff;color:#6a3fb5;
+  font-size:.7rem;padding:2px 7px;border-radius:10px;
+  margin-left:5px;font-weight:600;
+}
+[data-theme="dark"] .mall-tag{background:#3d2a55;color:#c6a8ff}
+.addr{font-size:.83rem;color:var(--muted);margin:5px 0}
+.addr::before{content:"📍 "}
+.gift{
+  font-size:.84rem;background:var(--accent);
+  padding:7px 11px;border-radius:8px;margin-top:7px;color:var(--text);
+}
+.gift::before{content:"🎁 "}
+[data-theme="dark"] .gift{background:#3a2530}
+.note{font-size:.76rem;color:var(--muted);margin-top:5px;font-style:italic}
+.note::before{content:"※ "}
+.actions{display:flex;gap:5px;margin-top:9px;flex-wrap:wrap}
+.btn{
+  padding:6px 11px;border-radius:8px;border:1px solid var(--border);
+  background:var(--card);font-size:.76rem;cursor:pointer;
+  color:var(--text);display:inline-flex;align-items:center;
+  gap:3px;transition:all .15s;font-family:inherit;
+}
+.btn:hover{border-color:var(--pink)}
+.btn-map{background:#4285f4;color:#fff;border-color:#4285f4}
+.btn-map:hover{background:#3367d6}
+.btn-fav.active{background:#ffeb3b;color:#5a4a00;border-color:#ffeb3b}
+.btn-done.active{background:#8bc34a;color:#fff;border-color:#8bc34a}
+.empty{text-align:center;color:var(--muted);padding:36px 16px;font-size:.88rem}
+
+/* ====================================================
+   FAB 同步按鈕
+   ==================================================== */
+.fab-sync{
+  position:fixed;bottom:22px;right:20px;
+  width:50px;height:50px;border-radius:50%;border:none;
+  background:var(--pink);color:#fff;font-size:1.2rem;
+  box-shadow:0 4px 16px rgba(229,107,133,.35);
+  cursor:pointer;z-index:100;transition:transform .2s,box-shadow .2s;
+}
+.fab-sync:hover{transform:scale(1.08)}
+.fab-sync.connected{background:#4caf50}
+
+/* ====================================================
+   Sync Panel (bottom sheet)
+   ==================================================== */
+.sync-overlay{
+  position:fixed;inset:0;background:rgba(0,0,0,.45);
+  z-index:200;opacity:0;pointer-events:none;transition:opacity .25s;
+}
+.sync-overlay.show{opacity:1;pointer-events:auto}
+.sync-panel{
+  position:fixed;bottom:0;left:0;right:0;
+  background:var(--card);border-radius:20px 20px 0 0;
+  padding:26px 22px 34px;z-index:201;
+  transform:translateY(100%);transition:transform .3s ease;
+  max-width:500px;margin:0 auto;
+  box-shadow:0 -4px 24px rgba(0,0,0,.15);
+}
+.sync-panel.open{transform:translateY(0)}
+.sync-panel h3{font-size:1.08rem;margin-bottom:7px;color:var(--text)}
+.sync-panel>p{font-size:.83rem;color:var(--muted);margin-bottom:14px}
+.sync-code-row{display:flex;gap:8px;margin-bottom:10px}
+.sync-code-input{
+  flex:1;padding:11px 13px;border:2px solid var(--border);
+  border-radius:10px;font-size:1rem;background:var(--bg);
+  color:var(--text);outline:none;font-family:monospace;
+  letter-spacing:.1em;text-transform:uppercase;
+}
+.sync-code-input:focus{border-color:var(--pink)}
+.btn-sync-join{
+  padding:11px 16px;background:var(--pink);color:#fff;
+  border:none;border-radius:10px;font-size:.9rem;
+  font-weight:600;cursor:pointer;font-family:inherit;
+  white-space:nowrap;
+}
+.sync-divider{
+  text-align:center;position:relative;margin:10px 0;
+  font-size:.8rem;color:var(--muted);
+}
+.sync-divider::before{
+  content:"";position:absolute;top:50%;left:0;right:0;
+  height:1px;background:var(--border);
+}
+.sync-divider span{background:var(--card);padding:0 10px;position:relative}
+.btn-sync-new{
+  width:100%;padding:13px 16px;background:var(--bg);
+  color:var(--text);border:2px solid var(--border);
+  border-radius:10px;font-size:.9rem;font-weight:600;
+  cursor:pointer;font-family:inherit;text-align:left;
+  display:flex;flex-direction:column;gap:2px;
+  transition:border-color .2s;
+}
+.btn-sync-new:hover{border-color:var(--pink)}
+.btn-sync-new span{font-size:.75rem;font-weight:400;color:var(--muted)}
+.sync-code-display{
+  background:var(--bg);border-radius:10px;
+  padding:14px 16px;margin-bottom:10px;
+}
+.sync-code-display>span{font-size:.78rem;color:var(--muted);display:block;margin-bottom:4px}
+.sync-code-value{
+  font-family:monospace;font-size:1.8rem;font-weight:700;
+  letter-spacing:.2em;color:var(--pink-d);
+}
+.btn-sync-copy{
+  margin-top:8px;padding:7px 14px;background:var(--card);
+  border:1px solid var(--border);border-radius:8px;
+  font-size:.8rem;cursor:pointer;font-family:inherit;color:var(--text);
+}
+.sync-status{
+  font-size:.82rem;color:var(--muted);margin-bottom:10px;
+  padding:8px 12px;background:var(--bg);border-radius:8px;
+}
+.sync-panel-actions{display:flex;gap:8px}
+.btn-sync-force,.btn-sync-disconnect{
+  flex:1;padding:10px;border-radius:10px;
+  font-size:.85rem;font-weight:600;cursor:pointer;
+  font-family:inherit;border:2px solid var(--border);
+  background:var(--card);color:var(--text);transition:border-color .2s;
+}
+.btn-sync-force:hover{border-color:var(--pink)}
+.btn-sync-disconnect{border-color:#f44336;color:#f44336}
+.btn-sync-disconnect:hover{background:#f44336;color:#fff}
+.sync-hint{font-size:.73rem;color:var(--muted);text-align:center;margin-top:12px}
+
+/* ====================================================
+   Toast
+   ==================================================== */
+#toast{
+  position:fixed;bottom:84px;left:50%;
+  transform:translateX(-50%) translateY(16px);
+  background:var(--text);color:var(--bg);
+  padding:11px 20px;border-radius:12px;font-size:.85rem;
+  z-index:300;opacity:0;pointer-events:none;
+  transition:opacity .3s,transform .3s;
+  max-width:90vw;text-align:center;
+  box-shadow:0 4px 16px rgba(0,0,0,.2);
+}
+#toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+/* ====================================================
+   Footer
+   ==================================================== */
+footer{text-align:center;padding:16px;font-size:.76rem;color:var(--muted)}
+</style>
 </head>
 <body>
 
-  <header>
-    <h1>🍼 台南媽媽禮地圖</h1>
-    <p>媽媽手冊兌換完整指南</p>
-    <button id="themeToggle" class="theme-toggle" title="切換深淺色" aria-label="切換深淺色模式">🌙</button>
-  </header>
+<header>
+  <h1>🍼 台南媽媽禮地圖</h1>
+  <p>媽媽手冊兌換完整指南</p>
+  <div class="header-btns">
+    <button id="themeToggle" class="hbtn" title="深淺色">🌙</button>
+  </div>
+</header>
 
-  <div class="container">
-
-    <div class="tabs" role="tablist">
-      <button class="tab active" data-section="local">🏪 實體店家</button>
-      <button class="tab" data-section="mall">🏬 百貨公司</button>
-      <button class="tab" data-section="online">📦 全台品牌</button>
-      <button class="tab" data-section="hospital">🏥 醫院診所</button>
-      <button class="tab" data-section="gov">🏛️ 政府補助</button>
-    </div>
-
-    <!-- ========= 實體店家 ========= -->
-    <section id="section-local">
-      <div class="toolbar">
-        <input type="text" class="search-box" id="searchBox" placeholder="🔍 搜尋店名、地址、贈品...">
-        <select id="brandFilter" class="brand-select" aria-label="依品牌篩選"></select>
-      </div>
-      <div id="stats" class="stats"></div>
-      <div class="warning">⚠️ 前往前請先電話確認庫存與活動是否在進行中,以免白跑一趟。</div>
-      <div id="districtList"></div>
-    </section>
-
-    <!-- ========= 百貨公司 ========= -->
-    <section id="section-mall" class="section-hidden">
-      <div class="warning">🏬 台南主要百貨內設有婦幼專櫃,可一站式逛多家品牌,建議挑週年慶或媽咪節檔期會有加碼贈禮。</div>
-      <div id="mallList"></div>
-    </section>
-
-    <!-- ========= 全台品牌 ========= -->
-    <section id="section-online" class="section-hidden">
-      <div class="warning">💡 以下品牌不限台南,全台媽咪皆可線上申請,審核通過後郵寄到府 (部分需自付運費)。</div>
-      <div id="onlineList"></div>
-    </section>
-
-    <!-- ========= 醫院診所 ========= -->
-    <section id="section-hospital" class="section-hidden">
-      <div class="warning">💡 台南多數大型婦產科於產檢、待產住院或出院時會贈送媽媽包/新生兒禮,內容依醫院而異。</div>
-      <div id="hospitalList"></div>
-    </section>
-
-    <!-- ========= 政府補助 ========= -->
-    <section id="section-gov" class="section-hidden">
-      <div id="govList"></div>
-    </section>
-
+<div class="container">
+  <div class="tabs" role="tablist">
+    <button class="tab active" data-section="local">🏪 實體店家</button>
+    <button class="tab" data-section="mall">🏬 百貨公司</button>
+    <button class="tab" data-section="online">📦 全台品牌</button>
+    <button class="tab" data-section="hospital">🏥 醫院診所</button>
+    <button class="tab" data-section="gov">🏛️ 政府補助</button>
   </div>
 
-  <!-- ========= 同步面板 ========= -->
-  <div id="syncOverlay" class="sync-overlay"></div>
-  <div id="syncPanel" class="sync-panel">
-    <h3>🔄 跨裝置雲端同步</h3>
-    <p id="syncDesc">輸入同步碼即可在多台裝置間即時同步收藏與已領取紀錄。</p>
-
-    <!-- 尚未綁定同步碼 -->
-    <div id="syncSetup">
-      <div class="sync-code-row">
-        <input type="text" id="syncCodeInput" class="sync-code-input" placeholder="輸入同步碼" maxlength="20" autocomplete="off" spellcheck="false">
-        <button id="btnJoinCode" class="btn btn-sync-join">加入</button>
-      </div>
-      <div class="sync-divider"><span>或</span></div>
-      <button id="btnNewCode" class="btn btn-sync-new">🆕 產生新的同步碼<span>第一次使用?點這裡建立</span></button>
+  <section id="section-local">
+    <div class="toolbar">
+      <input type="text" class="search-box" id="searchBox" placeholder="🔍 搜尋店名、地址、贈品...">
+      <select id="brandFilter" class="brand-select" aria-label="依品牌篩選"></select>
     </div>
+    <div id="stats" class="stats"></div>
+    <div class="warning">⚠️ 前往前請先電話確認庫存與活動是否在進行中,以免白跑一趟。</div>
+    <div id="districtList"></div>
+  </section>
 
-    <!-- 已綁定同步碼 -->
-    <div id="syncConnected" style="display:none">
-      <div class="sync-code-display">
-        <span>你的同步碼</span>
-        <div class="sync-code-value" id="syncCodeDisplay">------</div>
-        <button id="btnCopyCode" class="btn btn-sync-copy">📋 複製</button>
-      </div>
-      <div class="sync-status" id="syncStatus">🟢 已連線</div>
-      <div class="sync-panel-actions">
-        <button id="btnForceSync" class="btn btn-sync-force">🔄 立即同步</button>
-        <button id="btnDisconnect" class="btn btn-sync-disconnect">🔌 斷開</button>
-      </div>
+  <section id="section-mall" class="section-hidden">
+    <div class="warning">🏬 台南主要百貨內設有婦幼專櫃,建議挑週年慶或媽咪節檔期會有加碼贈禮。</div>
+    <div id="mallList"></div>
+  </section>
+
+  <section id="section-online" class="section-hidden">
+    <div class="warning">💡 以下品牌不限台南,全台媽咪皆可線上申請,審核通過後郵寄到府 (部分需自付運費)。</div>
+    <div id="onlineList"></div>
+  </section>
+
+  <section id="section-hospital" class="section-hidden">
+    <div class="warning">💡 台南多數大型婦產科於產檢、待產住院或出院時會贈送媽媽包/新生兒禮,內容依醫院而異。</div>
+    <div id="hospitalList"></div>
+  </section>
+
+  <section id="section-gov" class="section-hidden">
+    <div id="govList"></div>
+  </section>
+</div>
+
+<!-- 同步面板 -->
+<div id="syncOverlay" class="sync-overlay"></div>
+<div id="syncPanel" class="sync-panel">
+  <h3>☁️ 跨裝置雲端同步</h3>
+  <p id="syncDesc">輸入同步碼即可在多台裝置間即時同步收藏與已領取紀錄。</p>
+
+  <div id="syncSetup">
+    <div class="sync-code-row">
+      <input type="text" id="syncCodeInput" class="sync-code-input" placeholder="輸入同步碼" maxlength="20" autocomplete="off" spellcheck="false">
+      <button id="btnJoinCode" class="btn-sync-join">加入</button>
     </div>
-
-    <p class="sync-hint">💡 在另一台裝置輸入同樣的同步碼,資料會自動即時同步。</p>
+    <div class="sync-divider"><span>或</span></div>
+    <button id="btnNewCode" class="btn-sync-new">🆕 產生新的同步碼<span>第一次使用?點這裡建立</span></button>
   </div>
 
-  <!-- ========= 同步浮動按鈕 ========= -->
-  <button id="btnSync" class="fab-sync" title="跨裝置同步" aria-label="跨裝置同步">🔄</button>
+  <div id="syncConnected" style="display:none">
+    <div class="sync-code-display">
+      <span>你的同步碼</span>
+      <div class="sync-code-value" id="syncCodeDisplay">------</div>
+      <button id="btnCopyCode" class="btn-sync-copy">📋 複製</button>
+    </div>
+    <div class="sync-status" id="syncStatus">🟢 已連線</div>
+    <div class="sync-panel-actions">
+      <button id="btnForceSync" class="btn-sync-force">🔄 立即同步</button>
+      <button id="btnDisconnect" class="btn-sync-disconnect">🔌 斷開</button>
+    </div>
+  </div>
 
-  <footer class="footer">
-    資料僅供參考,實際優惠以各店家/單位公告為準<br>
-    最後更新: 2026/04 · Made with 💗 for 台南媽咪
-  </footer>
+  <p class="sync-hint">💡 在另一台裝置輸入同樣的同步碼,資料會自動即時同步。</p>
+</div>
 
-  <script src="js/data.js"></script>
-  <script src="js/app.js"></script>
+<button id="btnSync" class="fab-sync" title="雲端同步" aria-label="雲端同步">☁️</button>
+
+<footer>資料僅供參考,以各店家/官方公告為準 · 最後更新 2026/04 · Made with 💗</footer>
+<div id="toast"></div>
+
+<script>
+/* ====================================================
+   資料
+   ==================================================== */
+const STORES = [
+  // 中西區
+  {district:"中西區",mall:null,name:"麗嬰房 台南河樂店",brand:"麗嬰房",addr:"台南市中西區金華路三段259號",gift:"入會寵兒禮包 + 育兒金 $12,000",note:"憑媽媽手冊+身分證加入 LINE 會員申請"},
+  {district:"中西區",mall:null,name:"俏媽咪親子生活館 台南總店",brand:"俏媽咪",addr:"台南市中西區民生路一段129號",gift:"不限金額消費可兌換孕婦服飾一件",note:"電話 06-2211711"},
+  {district:"中西區",mall:"新光三越 台南中山店",name:"奇哥 新光三越中山店",brand:"奇哥",addr:"台南市中西區中山路162號",gift:"奇妮 mini 包 / 雲朵豆趣安撫巾",note:"先線上登錄媽咪孕友會審核"},
+  {district:"中西區",mall:"新光三越 台南新天地(西門店)",name:"奇哥 新光三越新天地",brand:"奇哥",addr:"台南市中西區西門路一段658號 3F",gift:"奇妮 mini 包 / 雲朵豆趣安撫巾",note:"電話 06-3030089;先線上登錄"},
+  {district:"中西區",mall:"新光三越 台南新天地(西門店)",name:"麗嬰房 新光三越新天地",brand:"麗嬰房",addr:"台南市中西區西門路一段658號",gift:"寵兒禮包 + 育兒金 $12,000",note:"需加入 LINE 會員"},
+  // 東區
+  {district:"東區",mall:"南紡購物中心",name:"麗嬰房 南紡店",brand:"麗嬰房",addr:"台南市東區中華東路一段366號 4F",gift:"寵兒禮包 + 育兒金 $12,000",note:"電話 06-2086930"},
+  {district:"東區",mall:"南紡購物中心",name:"奇哥 南紡店",brand:"奇哥",addr:"台南市東區中華東路一段366號 4F",gift:"奇妮 mini 包 / 雲朵豆趣安撫巾",note:"電話 06-2095192;先線上登錄"},
+  {district:"東區",mall:null,name:"麗嬰房 台南崇學店",brand:"麗嬰房",addr:"台南市東區崇學路146號",gift:"寵兒禮包 + 育兒金 $12,000",note:"需加入 LINE 會員"},
+  {district:"東區",mall:null,name:"麗嬰房 台南東環店",brand:"麗嬰房",addr:"台南市東區大同路一段49號",gift:"寵兒禮包 + 育兒金 $12,000",note:"需加入 LINE 會員"},
+  {district:"東區",mall:null,name:"麗嬰房 台南崇道店",brand:"麗嬰房",addr:"台南市東區崇道路63號",gift:"寵兒禮包 + 育兒金 $12,000",note:"需加入 LINE 會員"},
+  {district:"東區",mall:null,name:"麗嬰房 台南東寧店",brand:"麗嬰房",addr:"台南市東區東寧路436號",gift:"寵兒禮包 + 育兒金 $12,000",note:"需加入 LINE 會員"},
+  {district:"東區",mall:null,name:"奇哥 中華店",brand:"奇哥",addr:"台南市東區中華東路三段116號",gift:"奇妮 mini 包 / 雲朵豆趣安撫巾",note:"先線上登錄媽咪孕友會"},
+  // 北區
+  {district:"北區",mall:null,name:"奇哥 西門店",brand:"奇哥",addr:"台南市北區西門路四段226號",gift:"奇妮 mini 包 / 雲朵豆趣安撫巾",note:"先線上登錄審核"},
+  {district:"北區",mall:"新光三越 台南小北門店",name:"新光三越小北門 婦幼樓層",brand:"新光三越",addr:"台南市北區公園路591-101號",gift:"年度媽咪節/週年慶不定期贈禮",note:"2024 新開幕,含 180+ 品牌"},
+  // 安平區
+  {district:"安平區",mall:null,name:"奇哥 文平店",brand:"奇哥",addr:"台南市安平區文平路275號",gift:"奇妮 mini 包 / 雲朵豆趣安撫巾",note:"先線上登錄審核"},
+  // 永康區
+  {district:"永康區",mall:null,name:"麗嬰房 永康鹽行店",brand:"麗嬰房",addr:"台南市永康區中正北路197號",gift:"寵兒禮包 + 育兒金 $12,000",note:"需加入 LINE 會員"},
+  {district:"永康區",mall:null,name:"奇哥 開元店",brand:"奇哥",addr:"台南市永康區中山南路97號",gift:"奇妮 mini 包 / 雲朵豆趣安撫巾",note:"先線上登錄審核"},
+  {district:"永康區",mall:"三井 MITSUI OUTLET PARK 台南",name:"三井 Outlet 台南 婦幼區",brand:"MITSUI",addr:"台南市永康區中華路",gift:"不定期媽咪檔期贈禮",note:"留意官方 FB/LINE 公告"},
+  // 新化區
+  {district:"新化區",mall:null,name:"奇哥 新化店",brand:"奇哥",addr:"台南市新化區中正路705號",gift:"奇妮 mini 包 / 雲朵豆趣安撫巾",note:"先線上登錄審核"},
+  // 佳里區
+  {district:"佳里區",mall:null,name:"小丁婦幼嬰兒用品專門店",brand:"小丁婦幼",addr:"台南市佳里區仁愛路388號",gift:"新手媽咪媽媽禮",note:"先線上填表審核;電話 06-7232730"},
+  // 連鎖藥局
+  {district:"連鎖藥局(多區)",mall:null,name:"日藥本鋪 台南各門市",brand:"日藥本鋪",addr:"台南中山門市等",gift:"當期媽媽禮 (不定期)",note:"憑媽媽手冊 + APP 會員即可領,無須消費"},
+];
+
+const MALLS = [
+  {name:"南紡購物中心",addr:"台南市東區中華東路一段366號",phone:"06-2366222",hours:"11:00–22:00",note:"台南東區最大複合型購物中心,婦幼品牌集中在 4F"},
+  {name:"新光三越 台南新天地(西門店)",addr:"台南市中西區西門路一段658號",phone:"06-3030089",hours:"11:00–22:00",note:"台南最大單體百貨,奇哥在 3F"},
+  {name:"新光三越 台南中山店",addr:"台南市中西區中山路162號",phone:"06-2223141",hours:"11:00–22:00",note:"台南火車站旁,婦幼/童裝多在中層樓"},
+  {name:"新光三越 台南小北門店",addr:"台南市北區公園路591-101號",phone:"—",hours:"11:00–22:00",note:"2024 開幕,破萬坪面積,含 180+ 品牌"},
+  {name:"三井 MITSUI OUTLET PARK 台南",addr:"台南市永康區中華路",phone:"—",hours:"11:00–21:30",note:"永康區暢貨中心,不定期有婦幼檔期特賣"},
+];
+
+const ONLINE_BRANDS = [
+  {name:"貝親 Pigeon",category:"用品/奶粉",gift:"貝親媽咪包、試用品組合",how:"官網線上登錄媽媽手冊,審核後郵寄"},
+  {name:"亞培 Abbott",category:"奶粉",gift:"心美力試喝組、媽媽專刊",how:"官網填表,附電話確認"},
+  {name:"桂格 Quaker",category:"奶粉/營養品",gift:"孕婦專用奶粉試喝、孕期營養品",how:"線上申請,免費郵寄"},
+  {name:"雪印 Snow",category:"奶粉",gift:"雪印金強摯/愛斯佳試用罐",how:"官網填表"},
+  {name:"S-26 惠氏",category:"奶粉",gift:"惠氏媽媽迎新禮、試用罐",how:"上傳媽媽手冊到惠氏官網"},
+  {name:"能恩 Nestlé",category:"奶粉",gift:"能恩試喝包、水解配方試用",how:"官網線上登錄"},
+  {name:"啟賦 illuma",category:"奶粉",gift:"啟賦有機奶粉試用",how:"官網申請"},
+  {name:"卡洛塔妮",category:"羊奶粉",gift:"羊奶粉試喝包",how:"官網或 LINE 官方帳號"},
+  {name:"豐力富",category:"奶粉",gift:"試喝組合包",how:"官網填單"},
+  {name:"美強生",category:"奶粉",gift:"親舒系列試用",how:"官網登錄"},
+  {name:"六甲村 Mammy Village",category:"孕婦保養",gift:"孕婦保養品試用組",how:"官網會員登錄"},
+  {name:"Combi",category:"用品",gift:"媽咪日來店禮 / 試用品",how:"會員登錄 + 預約媽媽教室"},
+];
+
+const HOSPITALS = [
+  {name:"奇美醫院 (永康總院)",district:"永康區",gift:"待產包、新生兒紀念品",addr:"台南市永康區中華路901號"},
+  {name:"郭綜合醫院",district:"中西區",gift:"媽媽禮、產檢贈品",addr:"台南市中西區民生路二段22號"},
+  {name:"成大醫院",district:"北區",gift:"新生兒紀念包、衛教禮品",addr:"台南市北區勝利路138號"},
+  {name:"台南市立醫院",district:"東區",gift:"孕婦保健品、產後禮",addr:"台南市東區崇德路670號"},
+  {name:"佳里奇美醫院",district:"佳里區",gift:"媽媽包、產檢贈禮",addr:"台南市佳里區佳里興606號"},
+  {name:"柳營奇美醫院",district:"柳營區",gift:"媽媽禮、新生兒包",addr:"台南市柳營區太康里太康201號"},
+];
+
+const GOV_BENEFITS = [
+  {title:"中央生育給付 (2026 新制)",content:"中央普發每名新生兒 <strong>NT$100,000</strong> (10萬元),無論父母投保身份皆可領。可與地方生育津貼同時請領。"},
+  {title:"台南市生育獎勵金",content:"設籍台南連續 6 個月以上可申請:<br>• 第 1、2 胎:每名 <strong>$20,000</strong><br>• 第 3、4 胎:每名 <strong>$30,000</strong><br>• 第 5 胎以後:每名 <strong>$50,000</strong><br>新生兒出生後 180 日內至戶政事務所辦理。"},
+  {title:"育兒津貼 (0-未滿5歲)",content:"中央+地方發放:第 1 名每月 <strong>$5,000</strong>、第 2 名 <strong>$6,000</strong>、第 3 名以上 <strong>$7,000</strong>。"},
+  {title:"孕婦產前檢查補助",content:"健保署提供 <strong>14 次免費產檢</strong>,包含超音波、妊娠糖尿病篩檢等。台南額外補助乙型鏈球菌篩檢。"},
+  {title:"孕婦心理健康支持",content:"台南市提供孕產婦心理健康評估與諮詢,洽社會局或衛生局。"},
+  {title:"國民年金生育給付",content:"參加國保並生產的女性被保險人可請領 <strong>2 個月</strong>投保金額,向勞保局申請。"},
+];
+
+/* ====================================================
+   Firebase 設定
+   ==================================================== */
+const FIREBASE_DB = "https://momgift-d54b3-default-rtdb.asia-southeast1.firebasedatabase.app";
+
+/* ====================================================
+   localStorage keys
+   ==================================================== */
+const LS_THEME    = "tmg:theme";
+const LS_FAV      = "tmg:favorites";
+const LS_DONE     = "tmg:received-brands";
+const LS_CODE     = "tmg:sync-code";
+
+/* ====================================================
+   App 狀態
+   ==================================================== */
+const state = {
+  favorites:      new Set(JSON.parse(localStorage.getItem(LS_FAV)  || "[]")),
+  receivedBrands: new Set(JSON.parse(localStorage.getItem(LS_DONE) || "[]")),
+  searchText: "",
+  brandFilter: "all",
+  syncCode:  localStorage.getItem(LS_CODE) || null,
+  syncing:   false,
+  sseSource: null,
+};
+
+/* ====================================================
+   本地儲存
+   ==================================================== */
+function saveFav()  { localStorage.setItem(LS_FAV,  JSON.stringify([...state.favorites])); }
+function saveDone() { localStorage.setItem(LS_DONE, JSON.stringify([...state.receivedBrands])); }
+function saveCode(c){ state.syncCode = c; c ? localStorage.setItem(LS_CODE,c) : localStorage.removeItem(LS_CODE); }
+
+/* ====================================================
+   品牌連動已領取
+   ==================================================== */
+function isReceived(s){ return state.receivedBrands.has(s.brand); }
+function brandCount(b){ return STORES.filter(s=>s.brand===b).length; }
+function toggleBrand(brand){
+  state.receivedBrands.has(brand) ? state.receivedBrands.delete(brand) : state.receivedBrands.add(brand);
+  saveDone(); firebasePush();
+}
+
+/* ====================================================
+   Toast
+   ==================================================== */
+function toast(msg, ms=2600){
+  const el = document.getElementById("toast");
+  el.textContent = msg; el.classList.add("show");
+  clearTimeout(el._t);
+  el._t = setTimeout(()=>el.classList.remove("show"), ms);
+}
+
+/* ====================================================
+   Firebase 雲端同步 (REST API + SSE)
+   ==================================================== */
+function fbUrl(code){ return `${FIREBASE_DB}/sync/${encodeURIComponent(code)}`; }
+
+function getPayload(){
+  return {
+    favorites:      [...state.favorites],
+    receivedBrands: [...state.receivedBrands],
+    updatedAt:      new Date().toISOString(),
+  };
+}
+
+async function firebasePush(){
+  if(!state.syncCode) return;
+  try{
+    state.syncing = true; setSyncStatus("syncing");
+    const r = await fetch(fbUrl(state.syncCode)+".json",{
+      method:"PUT", headers:{"Content-Type":"application/json"},
+      body:JSON.stringify(getPayload())
+    });
+    if(!r.ok) throw new Error(r.statusText);
+    setSyncStatus("ok");
+  }catch(e){
+    console.error("push",e); setSyncStatus("err");
+    toast("⚠️ 同步失敗,請檢查網路");
+  }finally{ state.syncing=false; }
+}
+
+async function firebasePull(){
+  if(!state.syncCode) return false;
+  try{
+    setSyncStatus("syncing");
+    const r = await fetch(fbUrl(state.syncCode)+".json");
+    if(!r.ok) throw new Error(r.statusText);
+    const d = await r.json();
+    if(d){ applyRemote(d); setSyncStatus("ok"); return true; }
+    setSyncStatus("ok"); return false;
+  }catch(e){
+    console.error("pull",e); setSyncStatus("err"); return false;
+  }
+}
+
+function applyRemote(d){
+  if(d.favorites)      { state.favorites      = new Set(d.favorites);      saveFav(); }
+  if(d.receivedBrands) { state.receivedBrands = new Set(d.receivedBrands); saveDone(); }
+  renderLocal(); renderMalls(); refreshBrandSelect();
+}
+
+function startSSE(){
+  stopSSE();
+  if(!state.syncCode) return;
+  try{
+    state.sseSource = new EventSource(fbUrl(state.syncCode)+".json");
+    state.sseSource.addEventListener("put", e=>{
+      try{ const p=JSON.parse(e.data); if(p.data && !state.syncing){ applyRemote(p.data); setSyncStatus("ok"); } }catch{}
+    });
+    state.sseSource.onerror = ()=>{ setSyncStatus("err"); };
+  }catch{}
+}
+function stopSSE(){ if(state.sseSource){ state.sseSource.close(); state.sseSource=null; } }
+
+/* ====================================================
+   同步碼管理
+   ==================================================== */
+function randCode(){
+  const c="ABCDEFGHJKLMNPQRSTUVWXYZ23456789"; let s="";
+  for(let i=0;i<6;i++) s+=c[Math.floor(Math.random()*c.length)];
+  return s;
+}
+
+async function doNewCode(){
+  const code = randCode(); saveCode(code);
+  await firebasePush(); startSSE(); showConnected();
+  toast("✅ 同步碼已建立: "+code);
+}
+
+async function doJoin(raw){
+  const code = raw.trim().toUpperCase();
+  if(code.length < 3){ toast("❌ 請輸入至少 3 個字元"); return; }
+  saveCode(code);
+  const pulled = await firebasePull();
+  if(pulled) toast("✅ 已同步遠端資料!");
+  else{ await firebasePush(); toast("✅ 已連接,本地資料已上傳"); }
+  startSSE(); showConnected(); renderAll();
+}
+
+function doDisconnect(){
+  stopSSE(); saveCode(null); showSetup();
+  document.getElementById("btnSync").classList.remove("connected");
+  toast("🔌 已斷開同步");
+}
+
+async function doForceSync(){ await firebasePush(); toast("🔄 已上傳本地資料"); }
+
+function doCopyCode(){
+  if(!state.syncCode) return;
+  copyText(state.syncCode, "📋 同步碼已複製: "+state.syncCode);
+}
+
+function copyText(text, msg){
+  if(navigator.clipboard?.writeText){
+    navigator.clipboard.writeText(text).then(()=>toast(msg)).catch(()=>fallbackCopy(text,msg));
+  } else fallbackCopy(text,msg);
+}
+function fallbackCopy(text,msg){
+  const t=document.createElement("textarea");
+  t.value=text; t.style.cssText="position:fixed;top:-9999px";
+  document.body.appendChild(t); t.select(); document.execCommand("copy");
+  document.body.removeChild(t); toast(msg||"已複製");
+}
+
+/* ====================================================
+   同步面板 UI
+   ==================================================== */
+function togglePanel(){
+  const p=document.getElementById("syncPanel"), o=document.getElementById("syncOverlay");
+  const open = p.classList.toggle("open");
+  o.classList.toggle("show", open);
+}
+function showConnected(){
+  document.getElementById("syncSetup").style.display    = "none";
+  document.getElementById("syncConnected").style.display = "block";
+  document.getElementById("syncCodeDisplay").textContent  = state.syncCode;
+  document.getElementById("syncDesc").textContent = "已連線!收藏與已領取紀錄會即時同步到雲端。";
+  document.getElementById("btnSync").classList.add("connected");
+}
+function showSetup(){
+  document.getElementById("syncSetup").style.display    = "block";
+  document.getElementById("syncConnected").style.display = "none";
+  document.getElementById("syncDesc").textContent = "輸入同步碼即可在多台裝置間即時同步收藏與已領取紀錄。";
+  document.getElementById("syncCodeInput").value = "";
+}
+function setSyncStatus(s){
+  const el = document.getElementById("syncStatus"); if(!el) return;
+  el.textContent = {ok:"🟢 已連線 · 即時同步中", syncing:"🔄 同步中...", err:"🔴 連線中斷,重連中..."}[s] || "";
+}
+
+/* ====================================================
+   主題
+   ==================================================== */
+function initTheme(){
+  const s = localStorage.getItem(LS_THEME) || (matchMedia("(prefers-color-scheme:dark)").matches?"dark":"light");
+  applyTheme(s);
+}
+function applyTheme(t){
+  document.documentElement.setAttribute("data-theme",t);
+  localStorage.setItem(LS_THEME,t);
+  document.getElementById("themeToggle").textContent = t==="dark"?"☀️":"🌙";
+}
+function toggleTheme(){
+  applyTheme(document.documentElement.getAttribute("data-theme")==="dark"?"light":"dark");
+}
+
+/* ====================================================
+   工具
+   ==================================================== */
+function esc(s){ return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c])); }
+function sid(s){ return s.name+"|"+s.addr; }
+function mapsUrl(a){ return "https://www.google.com/maps/search/?api=1&query="+encodeURIComponent(a); }
+function uniqueBrands(){ return [...new Set(STORES.map(s=>s.brand))].sort(); }
+
+/* ====================================================
+   篩選
+   ==================================================== */
+function filtered(){
+  const q = state.searchText.toLowerCase().trim();
+  return STORES.filter(s=>{
+    if(state.brandFilter!=="all" && s.brand!==state.brandFilter) return false;
+    if(q && !(s.name+" "+s.addr+" "+s.brand+" "+s.gift).toLowerCase().includes(q)) return false;
+    return true;
+  });
+}
+
+/* ====================================================
+   卡片
+   ==================================================== */
+function card(s){
+  const id=sid(s), fav=state.favorites.has(id), done=isReceived(s), cnt=brandCount(s.brand);
+  return `<div class="card${done?" received":""}" data-id="${esc(id)}" data-brand="${esc(s.brand)}">
+    <div class="card-head"><h3>${esc(s.name)}<span class="brand-tag">${esc(s.brand)}</span>${s.mall?`<span class="mall-tag">🏬 ${esc(s.mall)}</span>`:""}</h3></div>
+    <div class="addr">${esc(s.addr)}</div>
+    <div class="gift">${esc(s.gift)}</div>
+    ${s.note?`<div class="note">${esc(s.note)}</div>`:""}
+    <div class="actions">
+      <a class="btn btn-map" href="${mapsUrl(s.addr)}" target="_blank" rel="noopener">🗺️ 導航</a>
+      <button class="btn btn-fav${fav?" active":""}" data-action="fav">${fav?"⭐ 已收藏":"☆ 收藏"}</button>
+      <button class="btn btn-done${done?" active":""}" data-action="done">${done?"✅ 已領取":"⬜ 未領取"}${cnt>1?" 🔗":""}</button>
+    </div>
+  </div>`;
+}
+
+/* ====================================================
+   渲染
+   ==================================================== */
+function renderLocal(){
+  const list = filtered(); updateStats(list.length);
+  const el = document.getElementById("districtList");
+  if(!list.length){ el.innerHTML='<div class="empty">找不到符合條件的店家 😢</div>'; return; }
+  const g={};
+  list.forEach(s=>{ (g[s.district]=g[s.district]||[]).push(s); });
+  el.innerHTML = Object.entries(g).map(([d,arr])=>
+    `<div class="district"><div class="district-title">📍 ${esc(d)} <span class="count">(${arr.length} 家)</span></div>${arr.map(card).join("")}</div>`
+  ).join("");
+}
+
+function renderMalls(){
+  document.getElementById("mallList").innerHTML = MALLS.map(m=>{
+    const cs=STORES.filter(s=>s.mall===m.name);
+    return `<div class="district">
+      <div class="district-title">🏬 ${esc(m.name)} <span class="count">(${cs.length} 櫃)</span></div>
+      <div class="info-block">
+        <p>📍 <strong>地址:</strong> ${esc(m.addr)}</p>
+        <p>📞 <strong>電話:</strong> ${esc(m.phone)}</p>
+        <p>🕐 <strong>營業時間:</strong> ${esc(m.hours)}</p>
+        <p style="color:var(--muted);font-style:italic;margin-top:4px">${esc(m.note)}</p>
+        <div class="actions"><a class="btn btn-map" href="${mapsUrl(m.addr)}" target="_blank" rel="noopener">🗺️ 導航到此百貨</a></div>
+      </div>
+      ${cs.length?cs.map(card).join(""):'<p class="empty" style="padding:12px">目前暫無已確認專櫃資料。</p>'}
+    </div>`;
+  }).join("");
+}
+
+function renderOnline(){
+  document.getElementById("onlineList").innerHTML = ONLINE_BRANDS.map(b=>
+    `<div class="card">
+      <div class="card-head"><h3>${esc(b.name)}<span class="brand-tag">${esc(b.category)}</span></h3></div>
+      <div class="gift">${esc(b.gift)}</div>
+      <div class="note">申請方式: ${esc(b.how)}</div>
+    </div>`
+  ).join("");
+}
+
+function renderHospitals(){
+  const g={};
+  HOSPITALS.forEach(h=>{ (g[h.district]=g[h.district]||[]).push(h); });
+  document.getElementById("hospitalList").innerHTML = Object.entries(g).map(([d,arr])=>
+    `<div class="district"><div class="district-title">📍 ${esc(d)}</div>${arr.map(h=>
+      `<div class="card">
+        <div class="card-head"><h3>${esc(h.name)}</h3></div>
+        <div class="addr">${esc(h.addr)}</div>
+        <div class="gift">${esc(h.gift)}</div>
+        <div class="actions"><a class="btn btn-map" href="${mapsUrl(h.addr)}" target="_blank" rel="noopener">🗺️ 導航</a></div>
+      </div>`
+    ).join("")}</div>`
+  ).join("");
+}
+
+function renderGov(){
+  document.getElementById("govList").innerHTML = GOV_BENEFITS.map(g=>
+    `<div class="info-block"><h3>${esc(g.title)}</h3><p>${g.content}</p></div>`
+  ).join("");
+}
+
+function renderAll(){ renderLocal(); renderMalls(); renderOnline(); renderHospitals(); renderGov(); }
+
+function updateStats(n){
+  const el=document.getElementById("stats"); if(!el) return;
+  el.innerHTML=`<span>顯示 <b>${n}</b> 家</span><span>⭐ 收藏 <b>${state.favorites.size}</b></span><span>✅ 已領 <b>${state.receivedBrands.size}</b>/<b>${uniqueBrands().length}</b> 品牌</span>${state.syncCode?'<span>☁️ 雲端同步中</span>':""}`;
+}
+
+function refreshBrandSelect(){
+  const sel=document.getElementById("brandFilter");
+  sel.innerHTML=`<option value="all">全部品牌</option>`+
+    uniqueBrands().map(b=>`<option value="${esc(b)}">${esc(b)}${state.receivedBrands.has(b)?" ✅":""}</option>`).join("");
+}
+
+/* ====================================================
+   事件: 卡片操作 (事件委派)
+   ==================================================== */
+document.body.addEventListener("click",e=>{
+  const btn=e.target.closest("[data-action]"); if(!btn) return;
+  const c=btn.closest(".card"); if(!c) return;
+  const id=c.dataset.id, brand=c.dataset.brand;
+  if(btn.dataset.action==="fav"){
+    state.favorites.has(id)?state.favorites.delete(id):state.favorites.add(id);
+    saveFav(); firebasePush();
+  } else if(btn.dataset.action==="done" && brand){
+    const was=state.receivedBrands.has(brand), cnt=brandCount(brand);
+    toggleBrand(brand);
+    if(cnt>1) toast((was?"🔗 已取消":"🔗 已標記")+`「${brand}」全部 ${cnt} 家分店`);
+  }
+  renderLocal(); renderMalls(); refreshBrandSelect();
+});
+
+/* ====================================================
+   初始化
+   ==================================================== */
+function init(){
+  // 主題
+  initTheme();
+  document.getElementById("themeToggle").addEventListener("click", toggleTheme);
+
+  // 分頁
+  document.querySelectorAll(".tab").forEach(t=>t.addEventListener("click",()=>{
+    document.querySelectorAll(".tab").forEach(x=>x.classList.remove("active"));
+    t.classList.add("active");
+    const s=t.dataset.section;
+    ["local","mall","online","hospital","gov"].forEach(k=>{
+      document.getElementById("section-"+k).classList.toggle("section-hidden",k!==s);
+    });
+  }));
+
+  // 搜尋 & 品牌篩選
+  refreshBrandSelect();
+  document.getElementById("searchBox").addEventListener("input",e=>{ state.searchText=e.target.value; renderLocal(); });
+  document.getElementById("brandFilter").addEventListener("change",e=>{ state.brandFilter=e.target.value; renderLocal(); });
+
+  // 同步面板
+  document.getElementById("btnSync").addEventListener("click", togglePanel);
+  document.getElementById("syncOverlay").addEventListener("click", togglePanel);
+  document.getElementById("btnNewCode").addEventListener("click", doNewCode);
+  document.getElementById("btnJoinCode").addEventListener("click",()=>doJoin(document.getElementById("syncCodeInput").value));
+  document.getElementById("syncCodeInput").addEventListener("keydown",e=>{ if(e.key==="Enter") doJoin(e.target.value); });
+  document.getElementById("btnCopyCode").addEventListener("click", doCopyCode);
+  document.getElementById("btnForceSync").addEventListener("click", doForceSync);
+  document.getElementById("btnDisconnect").addEventListener("click", doDisconnect);
+
+  // 若已有同步碼,自動重連
+  if(state.syncCode){
+    showConnected();
+    firebasePull().then(()=>renderAll());
+    startSSE();
+  }
+
+  renderAll();
+
+  // Service Worker 註冊
+  if("serviceWorker" in navigator){
+    navigator.serviceWorker.register("sw.js").catch(()=>{});
+  }
+}
+
+document.addEventListener("DOMContentLoaded", init);
+</script>
 </body>
 </html>
